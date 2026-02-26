@@ -1,12 +1,17 @@
 package ru.yandex.practicum.sleeptracker;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Reader;
+import ru.yandex.practicum.sleeptracker.enums.SleepQuality;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class SleepDataLoader {
     private final String sleepLogPath;
@@ -19,43 +24,51 @@ public class SleepDataLoader {
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
     }
 
-    // В ТЗ указано, что нужно придерживаться функционального подхода,
-    // но я не понял, как реализовать считывание файла с помощью стрима
-    public HashMap<SleepingSession, SleepQuality> loadSleepData() {
-        HashMap<SleepingSession, SleepQuality> sleepData = new HashMap<>();
-        String lineData;
-        int separatorIndex;
+    public List<SleepingSession> takeSleepingData() {
+        Optional<List<String>> stringSleepData = loadSleepDataFromFile();
 
-        try (Reader reader = new FileReader(sleepLogPath);
-             BufferedReader bReader = new BufferedReader(reader)) {
-             while (bReader.ready()) {
-                 lineData = bReader.readLine();
-                 separatorIndex = lineData.lastIndexOf(separator);
+        return stringSleepData.map(strings -> strings.stream()
+                .filter(this::isCorrectParsingSleepingSession)
+                .map(this::createSleepingSession)
+                .toList())
+                .orElseGet(ArrayList::new);
+    }
 
-                 if (separatorIndex != -1) {
-                     sleepData.put(createSleepingSession(lineData.substring(0, separatorIndex)),
-                             createSleepQuality(lineData.substring(separatorIndex + 1)));
-                 } else {
-                     System.out.printf("В строке: %s\n не найден символ разделения: %s\n", lineData, separator);
-                 }
-             }
-        } catch (Exception exp) {
+    public Optional<List<String>> loadSleepDataFromFile() {
+        try (Stream<String> lines = Files.lines(Paths.get(sleepLogPath), StandardCharsets.UTF_8)) {
+             return Optional.of(lines.toList());
+        } catch (IOException exp) {
             exp.printStackTrace();
         }
-        return sleepData;
+        return Optional.empty();
     }
 
-    public SleepingSession createSleepingSession(String sleepingSessionStr) {
-        int separatorIndex = sleepingSessionStr.indexOf(separator);
-        String beginSleepingSessionStr = sleepingSessionStr.substring(0, separatorIndex);
-        String endSleepingSessionStr = sleepingSessionStr.substring(separatorIndex + 1);
+    public SleepingSession createSleepingSession(String lineData){
+        int separatorIndexSleepingSession = lineData.indexOf(separator);
+        int separatorIndexSleepQuality = lineData.lastIndexOf(separator);
 
-        return new SleepingSession(LocalDateTime.parse(beginSleepingSessionStr, dateTimeFormatter),
-                LocalDateTime.parse(endSleepingSessionStr, dateTimeFormatter));
+        String beginSleepingSession = lineData.substring(0, separatorIndexSleepingSession);
+        String endSleepingSession = lineData.substring(separatorIndexSleepingSession + 1,
+                separatorIndexSleepQuality);
+        String sleepQuality = lineData.substring(separatorIndexSleepQuality + 1);
+
+        return new SleepingSession(LocalDateTime.parse(beginSleepingSession, dateTimeFormatter),
+                LocalDateTime.parse(endSleepingSession, dateTimeFormatter), SleepQuality.valueOf(sleepQuality));
 
     }
 
-    public SleepQuality createSleepQuality(String sleepQualityStr) {
-        return SleepQuality.valueOf(sleepQualityStr);
+    public boolean isCorrectParsingSleepingSession(String lineData) {
+        int separatorIndexSleepingSession = lineData.indexOf(separator);
+        int separatorIndexSleepQuality = lineData.lastIndexOf(separator);
+
+        if (separatorIndexSleepingSession == -1 || separatorIndexSleepQuality == -1
+                || separatorIndexSleepingSession == separatorIndexSleepQuality) {
+            System.out.println("Ошибка парсинга сессии сна.\n" +
+                    "Строка: " + lineData + "\n" +
+                    "Индекс разделителя начала и конца сессии сна: " + separatorIndexSleepingSession + "\n" +
+                    "Индекс разделителя сессии сна и его качества: " + separatorIndexSleepQuality);
+            return false;
+        }
+        return true;
     }
 }
