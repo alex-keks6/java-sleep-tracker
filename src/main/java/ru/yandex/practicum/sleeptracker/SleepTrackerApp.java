@@ -1,6 +1,6 @@
 package ru.yandex.practicum.sleeptracker;
 
-import ru.yandex.practicum.sleeptracker.functions.NumberSessions;
+import ru.yandex.practicum.sleeptracker.functions.*;
 
 import java.util.List;
 import java.util.function.Function;
@@ -15,10 +15,13 @@ public class SleepTrackerApp {
         SleepDataLoader sleepDataLoader = new SleepDataLoader(SLEEP_LOG_PATH, SEPARATOR, DATE_TIME_PATTERN);
         sleepData = sleepDataLoader.takeSleepingData();
 
-        // todo: добавление аналитических функций
-        analyticalFunctions = List.of(new NumberSessions("Количество сессий сна"));
+        // todo: добавление подсчета бессонных ночей
+        analyticalFunctions = List.of(new NumberSessions("Количество сессий сна"),
+                new MinDurationSession("Минимальная продолжительность сессии (в минутах)"),
+                new MaxDurationSession("Максимальная продолжительность сессии (в минутах)"),
+                new AverageDurationSession("Средняя продолжительность сессии (в минутах)"),
+                new BadCountSession("Количество сессий с плохим качеством сна"));
 
-        // todo: выполнение аналитических функций
         analyticalFunctions.forEach(function -> System.out.println(function.apply(sleepData)));
     }
 }

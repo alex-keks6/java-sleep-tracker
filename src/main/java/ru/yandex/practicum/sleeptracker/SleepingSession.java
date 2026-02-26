@@ -15,4 +15,16 @@ public class SleepingSession {
         this.endSleepingSession = endSleepingSession;
         this.sleepQuality = sleepQuality;
     }
+
+    public LocalDateTime getBeginSleepingSession() {
+        return beginSleepingSession;
+    }
+
+    public LocalDateTime getEndSleepingSession() {
+        return endSleepingSession;
+    }
+
+    public SleepQuality getSleepQuality() {
+        return sleepQuality;
+    }
 }

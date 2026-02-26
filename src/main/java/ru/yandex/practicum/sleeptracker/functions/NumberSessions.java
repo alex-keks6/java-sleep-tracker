@@ -13,8 +13,9 @@ public class NumberSessions implements Function<List<SleepingSession>, SleepAnal
         this.description = description;
     }
 
-    public SleepAnalysisResult apply(List<SleepingSession> list) {
-        return new SleepAnalysisResult(description, list.size());
+    @Override
+    public SleepAnalysisResult apply(List<SleepingSession> sleepingSessions) {
+        return new SleepAnalysisResult(description, sleepingSessions.size());
     }
 }
 
