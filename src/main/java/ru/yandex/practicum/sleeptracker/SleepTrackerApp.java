@@ -20,7 +20,8 @@ public class SleepTrackerApp {
                 new MinDurationSession("Минимальная продолжительность сессии (в минутах)"),
                 new MaxDurationSession("Максимальная продолжительность сессии (в минутах)"),
                 new AverageDurationSession("Средняя продолжительность сессии (в минутах)"),
-                new BadCountSession("Количество сессий с плохим качеством сна"));
+                new BadCountSession("Количество сессий с плохим качеством сна"),
+                new SleeplessCountSession("Количество бессонных ночей"));
 
         analyticalFunctions.forEach(function -> System.out.println(function.apply(sleepData)));
     }

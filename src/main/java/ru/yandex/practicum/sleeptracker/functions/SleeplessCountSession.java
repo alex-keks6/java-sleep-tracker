@@ -3,6 +3,11 @@ package ru.yandex.practicum.sleeptracker.functions;
 import ru.yandex.practicum.sleeptracker.SleepAnalysisResult;
 import ru.yandex.practicum.sleeptracker.SleepingSession;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.function.Function;
 
@@ -15,9 +20,18 @@ public class SleeplessCountSession implements Function<List<SleepingSession>, Sl
 
     @Override
     public SleepAnalysisResult apply(List<SleepingSession> sleepingSessions) {
+        LocalDateTime firstDateTime = sleepingSessions.getFirst().getBeginSleepingSession();
+        LocalDateTime lastDateTime = sleepingSessions.getLast().getEndSleepingSession();
+
+        // подсчет общего количества дней измерения
+        Duration periodSessions = Duration.between(
+                firstDateTime.toLocalTime().isBefore(LocalTime.of(12, 0))
+                        ? firstDateTime : firstDateTime.minusDays(1),
+                lastDateTime);
+
         long sleeplessCountSession = sleepingSessions.stream()
-                .filter()
-                .count();
+        .filter()
+        .count();
 
         // todo: проверить бессонная ночь или нет, можно следующим образом:
         //  если оба времени сессии были до рассматриваемого периода или оба после, то ночь бессонная
@@ -34,6 +48,10 @@ public class SleeplessCountSession implements Function<List<SleepingSession>, Sl
         //  затем проходимся по записям с сеансами, и если начало сеанса больше 6:00, а конец меньше 24:00,
         //  то не добавляем в список нормальных снов, иначе добавляем, причем добавляем именно LocalDate,
         //  за который случился нормальный сон, можно собирать в Set, чтобы не было дубликатов.
-        return new SleepAnalysisResult(description, sleeplessCountSession);
+        return new SleepAnalysisResult(description, 0);
+    }
+
+    public boolean isSleeplessNight(SleepingSession sleepingSession) {
+        
     }
 }
