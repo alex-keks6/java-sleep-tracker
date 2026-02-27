@@ -15,7 +15,7 @@ public class SleepTrackerApp {
         SleepDataLoader sleepDataLoader = new SleepDataLoader(SLEEP_LOG_PATH, SEPARATOR, DATE_TIME_PATTERN);
         sleepData = sleepDataLoader.takeSleepingData();
 
-        // todo: добавление подсчета бессонных ночей
+        // todo: добавление определения типа пользователя
         analyticalFunctions = List.of(new NumberSessions("Количество сессий сна"),
                 new MinDurationSession("Минимальная продолжительность сессии (в минутах)"),
                 new MaxDurationSession("Максимальная продолжительность сессии (в минутах)"),
