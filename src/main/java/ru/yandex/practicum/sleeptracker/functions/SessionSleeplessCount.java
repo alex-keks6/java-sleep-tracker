@@ -12,10 +12,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SleeplessCountSession implements Function<List<SleepingSession>, SleepAnalysisResult> {
+import static ru.yandex.practicum.sleeptracker.SleepClassification.isSleeplessNight;
+
+public class SessionSleeplessCount implements Function<List<SleepingSession>, SleepAnalysisResult> {
     private final String description;
 
-    public SleeplessCountSession(String description) {
+    public SessionSleeplessCount(String description) {
         this.description = description;
     }
 
@@ -25,23 +27,17 @@ public class SleeplessCountSession implements Function<List<SleepingSession>, Sl
         LocalDateTime lastDateTime = sleepingSessions.getLast().getEndSleepingSession();
 
         // подсчет общего количества дней измерения
-        Duration periodSessions = Duration.between(
+        Duration SessionsPeriod = Duration.between(
                 firstDateTime.toLocalTime().isBefore(LocalTime.of(12, 0))
                         ? firstDateTime : firstDateTime.minusDays(1),
                 lastDateTime);
 
         // подсчет количества не бессонных ночей
-        Set<LocalDate> normalCountSession = sleepingSessions.stream()
+        Set<LocalDate> normalSessionCount = sleepingSessions.stream()
                 .filter(session -> !isSleeplessNight(session))
                 .map(session -> session.getEndSleepingSession().toLocalDate())
                 .collect(Collectors.toSet());
 
-        return new SleepAnalysisResult(description, periodSessions.toDays() - normalCountSession.size());
-    }
-
-    public boolean isSleeplessNight(SleepingSession sleepingSession) {
-        return sleepingSession.getBeginSleepingSession().toLocalTime().isAfter(LocalTime.of(6, 0))
-                && sleepingSession.getBeginSleepingSession().toLocalDate()
-                .equals(sleepingSession.getEndSleepingSession().toLocalDate());
+        return new SleepAnalysisResult(description, SessionsPeriod.toDays() - normalSessionCount.size());
     }
 }

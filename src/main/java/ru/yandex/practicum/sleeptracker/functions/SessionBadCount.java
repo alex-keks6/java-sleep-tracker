@@ -7,19 +7,19 @@ import ru.yandex.practicum.sleeptracker.enums.SleepQuality;
 import java.util.List;
 import java.util.function.Function;
 
-public class BadCountSession implements Function<List<SleepingSession>, SleepAnalysisResult> {
+public class SessionBadCount implements Function<List<SleepingSession>, SleepAnalysisResult> {
     private final String description;
 
-    public BadCountSession(String description) {
+    public SessionBadCount(String description) {
         this.description = description;
     }
 
     @Override
     public SleepAnalysisResult apply(List<SleepingSession> sleepingSessions) {
-        long badCountSession = sleepingSessions.stream()
+        long sessionBadCount = sleepingSessions.stream()
                 .filter(session -> session.getSleepQuality() == SleepQuality.BAD)
                 .count();
 
-        return new SleepAnalysisResult(description, badCountSession);
+        return new SleepAnalysisResult(description, sessionBadCount);
     }
 }

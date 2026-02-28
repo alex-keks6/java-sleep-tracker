@@ -6,10 +6,10 @@ import ru.yandex.practicum.sleeptracker.SleepingSession;
 import java.util.List;
 import java.util.function.Function;
 
-public class NumberSessions implements Function<List<SleepingSession>, SleepAnalysisResult> {
+public class SessionNumber implements Function<List<SleepingSession>, SleepAnalysisResult> {
     private final String description;
 
-    public NumberSessions(String description) {
+    public SessionNumber(String description) {
         this.description = description;
     }
 

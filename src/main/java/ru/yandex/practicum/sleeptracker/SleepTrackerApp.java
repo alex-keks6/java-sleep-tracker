@@ -15,13 +15,13 @@ public class SleepTrackerApp {
         SleepDataLoader sleepDataLoader = new SleepDataLoader(SLEEP_LOG_PATH, SEPARATOR, DATE_TIME_PATTERN);
         sleepData = sleepDataLoader.takeSleepingData();
 
-        // todo: добавление определения типа пользователя
-        analyticalFunctions = List.of(new NumberSessions("Количество сессий сна"),
-                new MinDurationSession("Минимальная продолжительность сессии (в минутах)"),
-                new MaxDurationSession("Максимальная продолжительность сессии (в минутах)"),
-                new AverageDurationSession("Средняя продолжительность сессии (в минутах)"),
-                new BadCountSession("Количество сессий с плохим качеством сна"),
-                new SleeplessCountSession("Количество бессонных ночей"));
+        analyticalFunctions = List.of(new SessionNumber("Количество сессий сна"),
+                new SessionMinDuration("Минимальная продолжительность сессии (в минутах)"),
+                new SessionMaxDuration("Максимальная продолжительность сессии (в минутах)"),
+                new SessionAverageDuration("Средняя продолжительность сессии (в минутах)"),
+                new SessionBadCount("Количество сессий с плохим качеством сна"),
+                new SessionSleeplessCount("Количество бессонных ночей"),
+                new SessionUserType("Хронотип пользователя"));
 
         analyticalFunctions.forEach(function -> System.out.println(function.apply(sleepData)));
     }

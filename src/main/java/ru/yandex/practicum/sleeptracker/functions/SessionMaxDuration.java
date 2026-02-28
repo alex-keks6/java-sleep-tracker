@@ -7,21 +7,21 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
 
-public class MinDurationSession implements Function<List<SleepingSession>, SleepAnalysisResult> {
+public class SessionMaxDuration implements Function<List<SleepingSession>, SleepAnalysisResult> {
     private final String description;
 
-    public MinDurationSession(String description) {
+    public SessionMaxDuration(String description) {
         this.description = description;
     }
 
     @Override
     public SleepAnalysisResult apply(List<SleepingSession> sleepingSessions) {
-        Duration minDuration = sleepingSessions.stream()
+        Duration maxDuration = sleepingSessions.stream()
                 .map(session -> Duration.between(session.getBeginSleepingSession(),
                         session.getEndSleepingSession()))
-                .min((duration1, duration2) -> (int) (duration1.toMinutes() - duration2.toMinutes()))
+                .max((duration1, duration2) -> (int) (duration1.toMinutes() - duration2.toMinutes()))
                 .orElse(Duration.ofMinutes(0));
 
-        return new SleepAnalysisResult(description, minDuration.toMinutes());
+        return new SleepAnalysisResult(description, maxDuration.toMinutes());
     }
 }
