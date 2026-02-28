@@ -14,6 +14,7 @@ public class SleepTrackerApp {
     public static final String DATE_TIME_PATTERN = "dd.MM.yy HH:mm";
     public static List<SleepingSession> sleepData;
     public static List<Function<List<SleepingSession>, SleepAnalysisResult>> analyticalFunctions;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 

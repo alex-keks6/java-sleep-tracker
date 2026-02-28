@@ -3,7 +3,6 @@ package ru.yandex.practicum.sleeptracker;
 import java.time.LocalTime;
 
 public final class SleepClassification {
-
     public static boolean isSleeplessNight(SleepingSession sleepingSession) {
         return sleepingSession.getBeginSleepingSession().toLocalTime().isAfter(LocalTime.of(6, 0))
                 && sleepingSession.getBeginSleepingSession().toLocalDate()
