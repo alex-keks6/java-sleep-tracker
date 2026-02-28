@@ -43,7 +43,7 @@ public class SleepDataLoader {
         return Optional.empty();
     }
 
-    public SleepingSession createSleepingSession(String lineData){
+    public SleepingSession createSleepingSession(String lineData) {
         int separatorIndexSleepingSession = lineData.indexOf(separator);
         int separatorIndexSleepQuality = lineData.lastIndexOf(separator);
 
