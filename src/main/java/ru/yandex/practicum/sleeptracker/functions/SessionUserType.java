@@ -22,7 +22,7 @@ public class SessionUserType implements Function<List<SleepingSession>, SleepAna
                 .filter(SleepClassification::isOwlNight)
                 .count();
 
-        long SkylarkSessionCount = sleepingSessions.stream()
+        long skylarkSessionCount = sleepingSessions.stream()
                 .filter(SleepClassification::isSkylarkNight)
                 .count();
 
@@ -33,17 +33,17 @@ public class SessionUserType implements Function<List<SleepingSession>, SleepAna
                 .count();
 
         // если есть сомнения, то всегда возвращаем "голубя" (по ТЗ)
-        if (owlSessionCount == SkylarkSessionCount
-                || SkylarkSessionCount == pigeonSessionCount
+        if (owlSessionCount == skylarkSessionCount
+                || skylarkSessionCount == pigeonSessionCount
                 || owlSessionCount == pigeonSessionCount) {
             return new SleepAnalysisResult(description, "Голубь");
         }
 
-        long maxSessionCount = Math.max(owlSessionCount, Math.max(SkylarkSessionCount, pigeonSessionCount));
+        long maxSessionCount = Math.max(owlSessionCount, Math.max(skylarkSessionCount, pigeonSessionCount));
 
         if (maxSessionCount == owlSessionCount) {
             return new SleepAnalysisResult(description, "Сова");
-        } else if (maxSessionCount == SkylarkSessionCount) {
+        } else if (maxSessionCount == skylarkSessionCount) {
             return new SleepAnalysisResult(description, "Жаворонок");
         } else {
             return new SleepAnalysisResult(description, "Голубь");
