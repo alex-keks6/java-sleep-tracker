@@ -16,6 +16,10 @@ public class SessionAverageDuration implements Function<List<SleepingSession>, S
 
     @Override
     public SleepAnalysisResult apply(List<SleepingSession> sleepingSessions) {
+        if (sleepingSessions.isEmpty()) {
+            return new SleepAnalysisResult(description, (long) 0);
+        }
+
         long minutesSum = sleepingSessions.stream()
                 .map(session -> Duration.between(session.getBeginSleepingSession(),
                         session.getEndSleepingSession()))

@@ -15,7 +15,7 @@ public class SessionNumber implements Function<List<SleepingSession>, SleepAnaly
 
     @Override
     public SleepAnalysisResult apply(List<SleepingSession> sleepingSessions) {
-        return new SleepAnalysisResult(description, sleepingSessions.size());
+        return new SleepAnalysisResult(description, (long) sleepingSessions.size());
     }
 }
 
