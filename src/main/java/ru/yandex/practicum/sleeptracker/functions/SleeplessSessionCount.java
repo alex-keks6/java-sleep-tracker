@@ -28,7 +28,7 @@ public class SleeplessSessionCount implements Function<List<SleepingSession>, Sl
         LocalDateTime lastDateTime = sleepingSessions.getLast().getEndSleepingSession();
 
         // подсчет общего количества дней измерения
-        Duration SessionsPeriod = Duration.between(
+        Duration sessionsPeriod = Duration.between(
                 firstDateTime.toLocalTime().isBefore(LocalTime.of(12, 0))
                         ? firstDateTime : firstDateTime.plusDays(1),
                 lastDateTime.toLocalTime().isBefore(firstDateTime.toLocalTime())
@@ -40,6 +40,6 @@ public class SleeplessSessionCount implements Function<List<SleepingSession>, Sl
                 .map(session -> session.getEndSleepingSession().toLocalDate())
                 .collect(Collectors.toSet());
 
-        return new SleepAnalysisResult(description, SessionsPeriod.toDays() - normalSessionCount.size());
+        return new SleepAnalysisResult(description, sessionsPeriod.toDays() - normalSessionCount.size());
     }
 }
