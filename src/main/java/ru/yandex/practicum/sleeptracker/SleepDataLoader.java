@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -99,7 +98,7 @@ public class SleepDataLoader {
     public boolean isCorrectFile() {
         try {
             if (!Files.exists(sleepLogPath)) {
-                throw new IOException("Файл по пути "+ sleepLogPath + " не найден.");
+                throw new IOException("Файл по пути " + sleepLogPath + " не найден.");
             } else if (Files.size(sleepLogPath) == 0) {
                 throw new IOException("Файл " + sleepLogPath.getFileName() + " не содержит данных.");
             }
