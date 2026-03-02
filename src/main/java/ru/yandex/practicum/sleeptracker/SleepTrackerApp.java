@@ -2,10 +2,8 @@ package ru.yandex.practicum.sleeptracker;
 
 import ru.yandex.practicum.sleeptracker.functions.*;
 
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Scanner;
 import java.util.function.Function;
 
 public class SleepTrackerApp {
@@ -16,18 +14,13 @@ public class SleepTrackerApp {
     public static List<Function<List<SleepingSession>, SleepAnalysisResult>> analyticalFunctions;
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        String sleepLogFile = args[0];
+        SleepDataLoader sleepDataLoader = new SleepDataLoader(Paths.get(sleepLogFile), SEPARATOR, DATE_TIME_PATTERN);
 
-        System.out.println("Введите путь к файлу с логами " +
-                "(стандартное расположение - src/main/resources/sleep_log.txt):");
-        String sleepLogFile = scanner.nextLine();
-
-        if (!Files.exists(Paths.get(sleepLogFile))) {
-            System.out.println("Данный файл не найден.");
+        if (!sleepDataLoader.isCorrectFile()) {
             return;
         }
 
-        SleepDataLoader sleepDataLoader = new SleepDataLoader(sleepLogFile, SEPARATOR, DATE_TIME_PATTERN);
         sleepData = sleepDataLoader.takeSleepingData();
 
         analyticalFunctions = List.of(new SessionNumber("Количество сессий сна"),

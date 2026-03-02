@@ -1,24 +1,29 @@
 package ru.yandex.practicum.sleeptracker;
 
 import ru.yandex.practicum.sleeptracker.enums.SleepQuality;
+import ru.yandex.practicum.sleeptracker.exceptions.DateTimeIncorrectException;
+import ru.yandex.practicum.sleeptracker.exceptions.DateTimeSeparatorFindException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class SleepDataLoader {
-    private final String sleepLogPath;
+    private final Path sleepLogPath;
     private final String separator;
     private final DateTimeFormatter dateTimeFormatter;
 
-    public SleepDataLoader(String sleepLogPath, String separator, String dateTimePattern) {
+    public SleepDataLoader(Path sleepLogPath, String separator, String dateTimePattern) {
         this.sleepLogPath = sleepLogPath;
         this.separator = separator;
         dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimePattern);
@@ -35,7 +40,7 @@ public class SleepDataLoader {
     }
 
     public Optional<List<String>> loadSleepDataFromFile() {
-        try (Stream<String> lines = Files.lines(Paths.get(sleepLogPath), StandardCharsets.UTF_8)) {
+        try (Stream<String> lines = Files.lines(sleepLogPath, StandardCharsets.UTF_8)) {
              return Optional.of(lines.toList());
         } catch (IOException exp) {
             exp.printStackTrace();
@@ -61,12 +66,45 @@ public class SleepDataLoader {
         int separatorIndexSleepingSession = lineData.indexOf(separator);
         int separatorIndexSleepQuality = lineData.lastIndexOf(separator);
 
-        if (separatorIndexSleepingSession == -1 || separatorIndexSleepQuality == -1
-                || separatorIndexSleepingSession == separatorIndexSleepQuality) {
-            System.out.println("Ошибка парсинга сессии сна.\n" +
-                    "Строка: " + lineData + "\n" +
-                    "Индекс разделителя начала и конца сессии сна: " + separatorIndexSleepingSession + "\n" +
-                    "Индекс разделителя сессии сна и его качества: " + separatorIndexSleepQuality);
+        try {
+            // проверка на определение разделителей
+            if (separatorIndexSleepingSession == -1 || separatorIndexSleepQuality == -1
+                    || separatorIndexSleepingSession == separatorIndexSleepQuality) {
+                throw new DateTimeSeparatorFindException("Ошибка определения разделителей при парсинге сессии сна.\n" +
+                        "Строка: " + lineData + "\n" +
+                        "Индекс разделителя начала и конца сессии сна: " + separatorIndexSleepingSession + "\n" +
+                        "Индекс разделителя сессии сна и его качества: " + separatorIndexSleepQuality);
+            }
+            // проверка на парсинг
+            SleepingSession testSleepingSession = createSleepingSession(lineData);
+            // проверка на корректность диапазона
+            if (testSleepingSession.getBeginSleepingSession().isAfter(testSleepingSession.getEndSleepingSession())) {
+                throw new DateTimeIncorrectException("Ошибка. Некорректная дата и время.\n" +
+                        "Дата и время начала сна: " + testSleepingSession.getBeginSleepingSession()
+                        .format(dateTimeFormatter) + "\n" +
+                        "Дата и время окончания сна: " + testSleepingSession.getEndSleepingSession()
+                        .format(dateTimeFormatter));
+            }
+        } catch (DateTimeSeparatorFindException | DateTimeIncorrectException exp) {
+            System.out.println(exp.getMessage());
+            return false;
+        } catch (DateTimeParseException exp) {
+            System.out.println("Ошибка парсинга строки в LocalDateTime.");
+            System.out.println(exp.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isCorrectFile() {
+        try {
+            if (!Files.exists(sleepLogPath)) {
+                throw new IOException("Файл по пути "+ sleepLogPath + " не найден.");
+            } else if (Files.size(sleepLogPath) == 0) {
+                throw new IOException("Файл " + sleepLogPath.getFileName() + " не содержит данных.");
+            }
+        } catch (IOException | InvalidPathException exp) {
+            System.out.println(exp.getMessage());
             return false;
         }
         return true;
